@@ -1,0 +1,63 @@
+# Node modules & Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Python & AI Libraries
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+
+# AI Models & Serialized files
+*.joblib
+*.pkl
+*.h5
+*.pt
+*.pth
+*.onnx
+
+# Datasets & Temp files
+extracted_random/
+tmp_scan/
+tmp_scan_voting_result.csv
+*.csv
+drive-download-*.zip
+
+# Electron & Build Artifacts
+dist/
+build/
+out/
+maiware-linux-x64/
+maiware-win32-x64/
+*.zip
+*.exe
+*.dmg
+*.AppImage
+*.apk
+*.snap
+*.deb
+*.rpm
+snapshot_blob.bin
+v8_context_snapshot.bin
+
+# Logs & System
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+*.backup
+*.old
+
+# Specific generated files from your project
+callgraph.callgraph.dot
+callgraph.callgraph.png
+dir.txt
