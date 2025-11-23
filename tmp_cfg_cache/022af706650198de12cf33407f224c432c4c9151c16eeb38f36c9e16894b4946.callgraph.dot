@@ -1,0 +1,51 @@
+digraph callgraph {
+  // Graph-level styling
+  graph [bgcolor="#0a0e27", pad="0.5", nodesep="1.0", ranksep="1.2", splines=ortho];
+  node [shape=box, style="filled,rounded", fontname="Fira Code,Consolas,monospace", fontsize=11, fontcolor="#e0e0e0", penwidth=2];
+  edge [color="#4a9eff88", penwidth=2.0, arrowsize=0.8];
+
+  "0x140100200" [label="QueryPerformanceCounter\n0x140100200", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140100000" [label="_initterm\n0x140100000", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140100208" [label="GetSystemTimeAsFileTime\n0x140100208", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140100010" [label="_amsg_exit\n0x140100010", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140100210" [label="GetTickCount\n0x140100210", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x14000382a" [label="_initterm\n0x14000382a", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x1400032ac" [label="sub_1400032ac\n0x1400032ac", fillcolor="#1e2749", color="#4361ee"];
+  "0x140003330" [label="_start\n0x140003330", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x1400036b0" [label="sub_1400036b0\n0x1400036b0", fillcolor="#1e2749", color="#4361ee"];
+  "0x140100040" [label="exit\n0x140100040", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140003744" [label="_security_init_cookie\n0x140003744", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140100048" [label="_cexit\n0x140100048", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140003850" [label="sub_140003850\n0x140003850", fillcolor="#1e2749", color="#4361ee"];
+  "0x140100150" [label="SetThreadUILanguage\n0x140100150", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140003654" [label="_amsg_exit\n0x140003654", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x1400032da" [label="sub_1400032da\n0x1400032da", fillcolor="#1e2749", color="#4361ee"];
+  "0x1401001e0" [label="GetCurrentThreadId\n0x1401001e0", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x1401001e8" [label="GetCurrentProcessId\n0x1401001e8", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+  "0x140001a74" [label="sub_140001a74\n0x140001a74", fillcolor="#1e2749", color="#4361ee"];
+  "0x140100178" [label="Sleep\n0x140100178", fillcolor="#1a535c:#264653", gradientangle=90, color="#4ecdc4"];
+
+  // Edges
+  "0x14000382a" -> "0x140100000";
+  "0x1400032ac" -> "0x140100040";
+  "0x1400032ac" -> "0x140100048";
+  "0x140003330" -> "0x140003744";
+  "0x140003330" -> "0x140003654";
+  "0x140003330" -> "0x140100178";
+  "0x140003330" -> "0x14000382a";
+  "0x140003330" -> "0x1400032ac";
+  "0x140003330" -> "0x140003850";
+  "0x140003330" -> "0x140001a74";
+  "0x140003330" -> "0x1400036b0";
+  "0x140003744" -> "0x140100208";
+  "0x140003744" -> "0x1401001e8";
+  "0x140003744" -> "0x1401001e0";
+  "0x140003744" -> "0x140100210";
+  "0x140003744" -> "0x140100200";
+  "0x140003654" -> "0x140100010";
+  "0x1400032da" -> "0x1400032ac";
+  "0x1400032da" -> "0x140100048";
+  "0x140001a74" -> "0x140100040";
+  "0x140001a74" -> "0x140100150";
+  "0x140001a74" -> "0x140100178";
+}

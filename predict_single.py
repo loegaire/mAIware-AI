@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Predict a single PE file and output comprehensive JSON with features."""
+import hashlib
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 import pefile
 
 from ensemble_predict_dir import (
@@ -11,6 +15,10 @@ from ensemble_predict_dir import (
 )
 from ensemble_vote import run_majority_voting
 import pe_to_features
+
+BASE_DIR = Path(__file__).resolve().parent
+CALLGRAPH_SCRIPT = BASE_DIR / "extract_callgraph.py"
+CALLGRAPH_CACHE = BASE_DIR / "tmp_cfg_cache"
 
 
 def extract_pe_sections(file_path: Path) -> list:
@@ -134,6 +142,79 @@ def detect_packer(file_path: Path, sections: list) -> str:
         return 'Unknown'
 
 
+def _hash_file_for_cache(file_path: Path) -> str:
+    hasher = hashlib.sha256()
+    with open(file_path, 'rb') as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b''):
+            if not chunk:
+                break
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def generate_callgraph_image(file_path: Path) -> Optional[str]:
+    """Generate (or reuse cached) call graph image for the binary."""
+    if not CALLGRAPH_SCRIPT.exists():
+        return None
+
+    try:
+        CALLGRAPH_CACHE.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        print(f"Warning: Unable to create CFG cache directory: {exc}", file=sys.stderr)
+        return None
+
+    try:
+        cache_key = _hash_file_for_cache(file_path)
+    except OSError as exc:
+        print(f"Warning: Unable to hash file for CFG cache: {exc}", file=sys.stderr)
+        return None
+
+    prefix = CALLGRAPH_CACHE / cache_key
+    png_path = prefix.with_suffix('.callgraph.png')
+    if png_path.exists():
+        return str(png_path)
+
+    dot_path = prefix.with_suffix('.callgraph.dot')
+    cmd = [
+        sys.executable,
+        str(CALLGRAPH_SCRIPT),
+        str(file_path),
+        '-o',
+        str(prefix),
+        '--render',
+        '--max-nodes',
+        '20',
+    ]
+
+    try:
+        completed = subprocess.run(
+            cmd,
+            cwd=str(BASE_DIR),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+    except OSError as exc:
+        print(f"Warning: Failed to execute callgraph helper: {exc}", file=sys.stderr)
+        return None
+
+    if completed.returncode != 0:
+        msg = completed.stderr.strip() or completed.stdout.strip()
+        if msg:
+            print(f"Warning: Callgraph generation failed: {msg}", file=sys.stderr)
+        return None
+
+    if png_path.exists():
+        return str(png_path)
+
+    # Helper succeeded but PNG did not appear (maybe Graphviz missing)
+    if os.path.exists(dot_path):
+        print("Warning: Callgraph DOT generated but PNG missing (Graphviz not installed?)", file=sys.stderr)
+
+    return None
+
+
 def predict_single_file(file_path: Path) -> dict:
     """Predict a single file and return comprehensive result dict."""
     try:
@@ -192,9 +273,13 @@ def predict_single_file(file_path: Path) -> dict:
                 "is_packed": int(feature_row.get('Packed', 0)) == 1
             }
         }
-        
+
+        cfg_image = generate_callgraph_image(file_path)
+        if cfg_image:
+            result["cfg_image"] = cfg_image
+
         return result
-        
+
     except Exception as e:
         print(f"Error during prediction: {e}", file=sys.stderr)
         import traceback
